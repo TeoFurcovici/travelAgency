@@ -8,14 +8,17 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 
 
 public class RegularUserUI {
     private JLabel usernameLabel=new JLabel("Your username:");
     private JLabel idVacationLabel=new JLabel("Id Vacation:");
-    private JLabel searchByLabel=new JLabel("Search by price:");
+    private JLabel searchByLabel=new JLabel("Search by:");
     private JTextField idVacationText=new JTextField();
+    JLabel labelImage = new JLabel("Info?");
 
     private JTextField usernameText=new JTextField();
     private JTextField searchBytText=new JTextField();
@@ -43,6 +46,7 @@ public class RegularUserUI {
         idVacationLabel.setBounds(407,7,120,35);
         idVacationText.setBounds(500,7,120,25);
         searchByLabel.setBounds(407,47,200,35);
+        labelImage.setBounds(640,47,200,35);
         searchBytText.setBounds(500,47,120,25);
 
         bookVacation.setBounds(10,47,140,30);
@@ -73,9 +77,16 @@ public class RegularUserUI {
                 }
             }
         });
+        labelImage.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                JOptionPane.showMessageDialog(null,"In this box you should introduce the type of filter you want.","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
         panel1.add(usernameLabel);
         panel1.add(usernameText);
         panel1.add(idVacationLabel);
+        panel1.add(labelImage);
         panel1.add(idVacationText);
         panel1.add(searchByLabel);
         panel1.add(searchBytText);
@@ -190,8 +201,14 @@ public class RegularUserUI {
                         JTable table = null;
                         try {
                             table = userController.viewVacationPackage((userController.searchByDestination(t.getText())), defaultTableModel, jTable);
+                            if(table==null)
+                            {
+                                JOptionPane.showMessageDialog(null,"Sorry! This vacation is fully booked! ","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
+                            }
                         } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException illegalAccessException) {
                             illegalAccessException.printStackTrace();
+
                         }
                         jTable.setVisible(true);
                         jTable.setEnabled(true);

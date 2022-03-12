@@ -10,9 +10,10 @@ import java.util.List;
 public class VacationPackage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-  // @Column(name = "idVacation", unique = true, nullable = false)
+    @Column(name = "idVacation", unique = true, nullable = false)
     private long idVacation;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="idDestination")
     private Destination destination;
     @Column
     private LocalDate startPeriod;
@@ -27,12 +28,19 @@ public class VacationPackage {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="idVacation")
     private List<Users> users=new ArrayList<Users>();
+
+
+
     public long getIdVacation() {
         return idVacation;
     }
 
     public List<Users> getUsers() {
         return users;
+    }
+
+    public void setUsers(List<Users> users) {
+        this.users = users;
     }
 
     public LocalDate getStartPeriod() {
@@ -64,27 +72,13 @@ public class VacationPackage {
     }
 
 
-    public VacationPackage(LocalDate endDate, int nrPeopleAllowed, LocalDate startDate, Destination destination, String statusVacation) {
-        this.destination = destination;
-        this.startPeriod = startDate;
-        this.endPeriod = endDate;
-        this.nrPeopleAllowed = nrPeopleAllowed;
-        this.statusVacation = statusVacation;
-    }
 
 
     public long getPrice() {
         return price;
     }
 
-    public VacationPackage(LocalDate endDate, int nrPeopleAllowed, LocalDate startDate, Destination destination, String statusVacation, List<Users> users) {
-        this.destination = destination;
-        this.startPeriod = startDate;
-        this.endPeriod = endDate;
-        this.nrPeopleAllowed = nrPeopleAllowed;
-        this.statusVacation = statusVacation;
-        this.users=users;
-    }
+
 
     public VacationPackage(LocalDate endDate, int nrPeopleAllowed, LocalDate startDate, Destination destination, String statusVacation,long price) {
         this.destination = destination;
@@ -106,7 +100,7 @@ public class VacationPackage {
     public String toString() {
         return "VacationPackage{" +
                 "idVacation=" + idVacation +
-                ", destination=" + destination +
+                //", destination=" + destination +
                 ", startPeriod=" + startPeriod +
                 ", endPeriod=" + endPeriod +
                 ", nrPeopleAllowed=" + nrPeopleAllowed +

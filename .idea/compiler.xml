@@ -10,6 +10,7 @@
         <module name="Assignment1_SD" />
         <module name="A1_SD" />
         <module name="Assignment_Sd_1" />
+        <module name="travelAgency" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

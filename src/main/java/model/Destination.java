@@ -16,9 +16,12 @@ public class Destination {
     private String destinationName;
     @Column(name = "country")
     private String country;
-    @OneToMany(mappedBy = "destination", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "destination",  cascade = CascadeType.ALL)
     private List<VacationPackage> vacationPackages=new ArrayList<>();
 
+    public List<VacationPackage> getVacationPackages() {
+        return vacationPackages;
+    }
 
     public void setVacationPackages(List<VacationPackage> vacationPackages) {
         this.vacationPackages = vacationPackages;

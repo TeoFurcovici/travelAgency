@@ -2,19 +2,26 @@ package repository;
 
 import model.Admin;
 import model.Destination;
+import model.Users;
 import model.VacationPackage;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import javax.persistence.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminRepo {
     private static final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("ro.tutorial.lab.SD");
+
     public void insertAdmin(Admin admin)
     {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -23,6 +30,7 @@ public class AdminRepo {
         em.getTransaction().commit();
         em.close();
     }
+
     public void insertDestination(Destination destination)
     {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -35,7 +43,20 @@ public class AdminRepo {
     {
         EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("DELETE from Destination d where d.destinationName= : destination");
+        List<VacationPackage> vacationPackages = findDestinationByName(destination).getVacationPackages();
+        while(vacationPackages.size() != 0) {
+            EntityManager em1 = entityManagerFactory.createEntityManager();
+            em1.getTransaction().begin();
+            VacationPackage vacationPackage = vacationPackages.get(0);
+            long vacationId= vacationPackage.getIdVacation();
+            Query query = em1.createQuery("DELETE from VacationPackage d where d.idVacation=:vacationId");
+            query.setParameter("vacationId",vacationId);
+            query.executeUpdate();
+            em1.getTransaction().commit();
+            em1.close();
+            vacationPackages = findDestinationByName(destination).getVacationPackages();
+        }
+        Query query = em.createQuery("DELETE from Destination d where d.destinationName=:destination");
         query.setParameter("destination",destination);
         int deleted= query.executeUpdate();
         em.getTransaction().commit();
@@ -143,6 +164,10 @@ public class AdminRepo {
                 Field destinationField= Destination.class.getDeclaredField("destinationName");
                 columnsTable[i]=destinationField.getName();
             }
+            if (columnsTable[i].equals("users")) {
+                Field destinationField = Users.class.getDeclaredField("username");
+                columnsTable[i] = destinationField.getName();
+            }
             i++;
 
         }
@@ -158,7 +183,11 @@ public class AdminRepo {
             rowObj[4]=vacationPackage.getNrPeopleAllowed();
             rowObj[5]=vacationPackage.getPrice();
             rowObj[6]= vacationPackage.getStatusVacation();
-            rowObj[7]=vacationPackage.getUsers();
+            List<String> userNames= new ArrayList<>();
+            for (Users user: vacationPackage.getUsers()) {
+                userNames.add(user.getUsername());
+            }
+            rowObj[7]=userNames;
             defaultTableModel.addRow(rowObj);
 
         }

@@ -3,6 +3,7 @@ package presentation;
 import controller.AdminController;
 import model.Destination;
 import model.StatusVacation;
+import service.RegisterLogInValidator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +17,7 @@ public class AdminUI {
     AdminController adminController;
     DefaultTableModel defaultTableModel=new DefaultTableModel();
     JTable jTable;
+    RegisterLogInValidator registerLogInValidator;
     private JLabel destinationNameLabel=new JLabel("Destination Name:");
     private JLabel startDateLabel=new JLabel("Start Date:");
     private JLabel endDateLabel=new JLabel("End Date:");
@@ -41,6 +43,7 @@ public class AdminUI {
 
     public AdminUI() {
         this.adminController=new AdminController();
+        this.registerLogInValidator=new RegisterLogInValidator();
         JFrame frame = new JFrame();
 
         frame.setSize(750,700);
@@ -114,8 +117,25 @@ public class AdminUI {
             public void actionPerformed(ActionEvent e) {
                 LocalDate startDate= LocalDate.parse(startDateText.getText());
                 LocalDate endDate= LocalDate.parse(endDateText.getText());
+                if(registerLogInValidator.isValidNr(priceNameText.getText()) && registerLogInValidator.isValidDate(startDateText.getText())
+                && registerLogInValidator.isValidDate(endDateText.getText()) && registerLogInValidator.endDateAfterStartDate(endDate,startDate)
+                && registerLogInValidator.isValidNr(nrPeopleAllowedText.getText())) {
+                    adminController.insertVacationPackage(endDate, Integer.parseInt(nrPeopleAllowedText.getText()), startDate, destinationNameText.getText(), statusVacationText.getText(), Long.parseLong(priceNameText.getText()));
+                }
+                else if(!registerLogInValidator.isValidNr(priceNameText.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"Plese enter a valid number for price","Info Box",JOptionPane.INFORMATION_MESSAGE);
+                }
+                else if(!registerLogInValidator.endDateAfterStartDate(endDate,startDate) ||
+                !registerLogInValidator.isValidDate(endDateText.getText()) || !registerLogInValidator.isValidDate(startDateText.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"The date isn`t valid!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+                }
+                else if(!registerLogInValidator.isValidNr(nrPeopleAllowedText.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"Plese enter a valid number for the number of people ","Info Box",JOptionPane.INFORMATION_MESSAGE);
 
-                adminController.insertVacationPackage(endDate,Integer.parseInt(nrPeopleAllowedText.getText()),startDate,destinationNameText.getText(), statusVacationText.getText(),Long.parseLong(priceNameText.getText()));
+                }
             }
         });
         deleteVacationActionListener(new ActionListener() {

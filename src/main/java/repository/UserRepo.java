@@ -107,9 +107,9 @@ public class UserRepo {
                 rowObj[5]=vacationPackage.getPrice();
                 rowObj[6]= vacationPackage.getStatusVacation();
                 List<String> userNames= new ArrayList<>();
-            for (Users user: vacationPackage.getUsers()) {
+                for (Users user: vacationPackage.getUsers()) {
                     userNames.add(user.getUsername());
-            }
+                }
                 rowObj[7]=userNames;
                 defaultTableModel.addRow(rowObj);
 
@@ -147,13 +147,32 @@ public class UserRepo {
         Users user= this.fidnUserById(idUser);
         List<Users> usersList= new ArrayList<>();
         usersList.add(user);
+        JTable vacationPackagesTable=new JTable();
         VacationPackage vacationPackage=this.findVacationById(idVacation);
-        VacationPackage newVacation= new VacationPackage(vacationPackage.getEndPeriod(),vacationPackage.getNrPeopleAllowed(),vacationPackage.getStartPeriod(), vacationPackage.getDestination(), vacationPackage.getStatusVacation(),usersList);
-        user.addVacationtoUser(vacationPackage);
-        JTable vacationPackagesTable;
-        vacationPackagesTable=create(user.getVacations(),defaultTableModel,jTable);
-        vacationPackage.setNrPeopleAllowed(vacationPackage.getNrPeopleAllowed()-1 );
-        em.merge(newVacation);
+        if(vacationPackage.getStatusVacation().equals(StatusVacation.NOT_BOOKED.toString()) || vacationPackage.getStatusVacation().equals(StatusVacation.IN_PROGRESS.toString()))
+        {
+            int nrUsersBefore= vacationPackage.getUsers().size();
+            vacationPackage.setUsers(usersList);
+            int nrUsersAfter= vacationPackage.getUsers().size();
+            if(nrUsersBefore==0 && nrUsersAfter!=0)
+            {
+                vacationPackage.setStatusVacation(StatusVacation.IN_PROGRESS.toString());
+            }
+            user.addVacationtoUser(vacationPackage);
+            vacationPackagesTable=create(user.getVacations(),defaultTableModel,jTable);
+            vacationPackage.setNrPeopleAllowed(vacationPackage.getNrPeopleAllowed()-1 );
+            if(vacationPackage.getNrPeopleAllowed()==0)
+            {
+                vacationPackage.setStatusVacation(StatusVacation.BOOKED.toString());
+            }
+            em.merge(vacationPackage);
+
+        }
+        if(vacationPackage.getStatusVacation().equals(StatusVacation.BOOKED.toString()))
+        {
+               vacationPackagesTable=create(user.getVacations(),defaultTableModel,jTable);
+        }
+
         em.getTransaction().commit();
         em.close();
         return  vacationPackagesTable;

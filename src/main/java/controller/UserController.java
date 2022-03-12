@@ -27,10 +27,6 @@ public class UserController {
     {
         return userService.getUserByUsername(username);
     }
-    public Users getbyId(long id)
-    {
-        return userService.getUserById(id);
-    }
     public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
         return userService.viewVacationPackage(vacationPackagesList,defaultTableModel,jTable);
     }

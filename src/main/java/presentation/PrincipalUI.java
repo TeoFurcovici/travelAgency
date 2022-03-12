@@ -2,20 +2,28 @@ package presentation;
 
 import controller.AdminController;
 import controller.UserController;
+import model.Admin;
 import model.Users;
+import service.RegisterLogInValidator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PrincipalUI {
     private AdminUI adminUI;
     UserController userController;
     AdminController adminController;
+    RegisterLogInValidator registerLogInValidator;
     private RegularUserUI regularUserUI;
     private final JButton adminButton=new JButton("Admin");
+    ImageIcon icon = new ImageIcon("/travelAgency/icon.jpg");
+    JLabel labelImage = new JLabel("Info?");
     private final JButton regularUserButton=new JButton("Regular User");
     private final JButton registerButton=new JButton("Register");
     private final JButton registerButtonAdmin=new JButton("Register admin");
@@ -32,9 +40,6 @@ public class PrincipalUI {
     private final JLabel passLabelReg=new JLabel("Password:");
     private final JLabel passLabelRegAdmin=new JLabel("Password:");
     private final JLabel firstNameLabel=new JLabel("First Name:");
-    private final JLabel firstNameLabelAdmin=new JLabel("First Name:");
-    private final JLabel lastNameLabel=new JLabel("Last Name:");
-    private final JLabel lastNameLabelAdmin=new JLabel("Last Name:");
     private final JTextField usernameText=new JTextField();
     private final JTextField usernameTextAdmin=new JTextField();
     private final JTextField usernameTextReg=new JTextField();
@@ -48,12 +53,10 @@ public class PrincipalUI {
     private final JTextField lastNametext=new JTextField();
     private final JTextField lastNametextAdmin=new JTextField();
 
-    public String getUsernameText() {
-        return usernameText.toString();
-    }
 
     public PrincipalUI() {
         this.userController= new UserController();
+        this.registerLogInValidator= new RegisterLogInValidator();
         this.adminController= new AdminController();
         JFrame framePrincipal = new JFrame();
         framePrincipal.setSize(550, 250);
@@ -64,7 +67,7 @@ public class PrincipalUI {
         framePrincipal.add(principalPanel);
 
 
-        JFrame logInFrame=new JFrame();
+        JFrame logInFrame=new JFrame("Log in User");
         logInFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         logInFrame.setSize(300,250);
         JPanel logInPanel=new JPanel();
@@ -72,7 +75,7 @@ public class PrincipalUI {
         logInPanel.setLayout(null);
         logInFrame.add(logInPanel);
 
-        JFrame logInFrameForAdmin=new JFrame();
+        JFrame logInFrameForAdmin=new JFrame("Log In Admin");
         logInFrameForAdmin.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         logInFrameForAdmin.setSize(300,250);
         JPanel logInPanelAdmin=new JPanel();
@@ -81,7 +84,7 @@ public class PrincipalUI {
         logInFrameForAdmin.add(logInPanelAdmin);
 
 
-        JFrame registerFrame=new JFrame();
+        JFrame registerFrame=new JFrame("Register User");
         registerFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         registerFrame.setSize(300,350);
         JPanel registerPanel=new JPanel();
@@ -89,7 +92,7 @@ public class PrincipalUI {
         registerPanel.setLayout(null);
         registerFrame.add(registerPanel);
 
-        JFrame registerFrameAdmin=new JFrame();
+        JFrame registerFrameAdmin=new JFrame("Register Admin");
         registerFrameAdmin.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         registerFrameAdmin.setSize(300,350);
         JPanel registerPanelAdmin=new JPanel();
@@ -112,6 +115,7 @@ public class PrincipalUI {
 
         passLabel.setBounds(7,87,120,25);
         passText.setBounds(100,87,120,25);
+        labelImage.setBounds(200,287,120,25);
 
         usernameLabelReg.setBounds(7,47,120,25);
         usernameTextReg.setBounds(100,47,120,25);
@@ -127,6 +131,8 @@ public class PrincipalUI {
 
         passLabelRegAdmin.setBounds(7,87,120,25);
         passTextRegAdmin.setBounds(100,87,120,25);
+        labelImage.setBounds(200,87,120,25);
+
 
         passLabelAdmin.setBounds(7,87,120,25);
         passTextAdmin.setBounds(100,87,120,25);
@@ -134,13 +140,16 @@ public class PrincipalUI {
         firstNameLabel.setBounds(7,127,120,25);
         firstNameText.setBounds(100,127,120,25);
 
+        JLabel firstNameLabelAdmin = new JLabel("First Name:");
         firstNameLabelAdmin.setBounds(7,127,120,25);
         firstNameTextAdmin.setBounds(100,127,120,25);
 
 
+        JLabel lastNameLabel = new JLabel("Last Name:");
         lastNameLabel.setBounds(7,167,120,25);
         lastNametext.setBounds(100,167,120,25);
 
+        JLabel lastNameLabelAdmin = new JLabel("Last Name:");
         lastNameLabelAdmin.setBounds(7,167,120,25);
         lastNametextAdmin.setBounds(100,167,120,25);
 
@@ -175,6 +184,7 @@ public class PrincipalUI {
         registerPanelAdmin.add(usernameTextRegAdmin);
         registerPanelAdmin.add(passLabelRegAdmin);
         registerPanelAdmin.add(passTextRegAdmin);
+        //registerPanelAdmin.add(labelImage);
         registerPanelAdmin.add(firstNameLabelAdmin);
         registerPanelAdmin.add(firstNameTextAdmin);
         registerPanelAdmin.add(lastNameLabelAdmin);
@@ -184,6 +194,7 @@ public class PrincipalUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logInFrameForAdmin.setVisible(true);
+
             }
         });
         regularUserButtonActionListener(new ActionListener() {
@@ -207,13 +218,61 @@ public class PrincipalUI {
         createAccountButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.createUser(UUID.randomUUID().toString(),firstNameText.getText(),lastNametext.getText(),usernameTextReg.getText(),passTextReg.getText());
+
+                Users currentUser= userController.getByUsername(usernameTextReg.getText());
+                System.out.println(usernameTextReg.getText());
+                if(registerLogInValidator.isValidUsername(usernameTextReg.getText()) && registerLogInValidator.isValidPass(passTextReg.getText())
+                && currentUser==null)
+                {
+                    userController.createUser(UUID.randomUUID().toString(),firstNameText.getText(),lastNametext.getText(),usernameTextReg.getText(),passTextReg.getText());
+                    firstNameText.setText("");
+                    lastNametext.setText("");
+                    usernameTextReg.setText("");
+                    passTextReg.setText("");
+                    JOptionPane.showMessageDialog(null,"Thank you! Your account has been succesfully created!");
+
+                }
+                else if(currentUser!=null){
+                    JOptionPane.showMessageDialog(null,"An account with this username already exists");
+                    usernameTextReg.setText("");
+                    passTextReg.setText("");
+
+                }
+                else if(!registerLogInValidator.isValidUsername(usernameTextReg.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"The username doesn`t meet the requirements!");
+                    usernameTextReg.setText("");
+
+                }
+                else  if(!registerLogInValidator.isValidPass(passTextReg.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"The password doesn`t meet the requirements!");
+                    passTextReg.setText("");
+                }
             }
+
         });
         createAccountForAdminButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adminController.createAdmin(UUID.randomUUID().toString(),firstNameTextAdmin.getText(),lastNametextAdmin.getText(),usernameTextRegAdmin.getText(),passTextRegAdmin.getText());
+                if(registerLogInValidator.isValidUsername(usernameTextRegAdmin.getText()) && registerLogInValidator.isValidPass(passTextRegAdmin.getText())) {
+                    adminController.createAdmin(UUID.randomUUID().toString(), firstNameTextAdmin.getText(), lastNametextAdmin.getText(), usernameTextRegAdmin.getText(), passTextRegAdmin.getText());
+                    firstNameTextAdmin.setText("");
+                    lastNametext.setText("");
+                    usernameTextRegAdmin.setText("");
+                    passTextRegAdmin.setText("");
+                }
+                    else {
+                    JOptionPane.showMessageDialog(null,"The password must contain minimum eight characters, at least one uppercase letter, one lowercase letter and one number ","Info Box",JOptionPane.INFORMATION_MESSAGE);
+                    usernameTextRegAdmin.setText("");
+                    passTextRegAdmin.setText("");
+                }
+            }
+        });
+        labelImage.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                JOptionPane.showMessageDialog(null,"The password must contain minimum eight characters, at least one uppercase letter, one lowercase letter and one number ","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
             }
         });
         logInButtonActionListener(new ActionListener() {
@@ -223,6 +282,11 @@ public class PrincipalUI {
                 if(regUser==null)
                 {
                     JOptionPane.showMessageDialog(null,"Please make sure that you have an account!");
+                }
+                else if(!regUser.getPassword().equals(passText.getText()))
+                {
+                    JOptionPane.showMessageDialog(null,"Your password is incorrect!");
+
                 }
                 else
                     regularUserUI= new RegularUserUI();

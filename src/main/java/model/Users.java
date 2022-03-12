@@ -31,6 +31,10 @@ public class Users {
         return vacations;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public Users() {}
 
     public Users(String firstName, String lastName, String username, String password)
