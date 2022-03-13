@@ -7,7 +7,7 @@ import repository.UserRepo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class UserService {
@@ -28,25 +28,7 @@ public class UserService {
             System.out.println("Cannot insert user in db");
         }
     }
-    public Users getUserById(long id){
-        if(id > 0)
-        {
-            Users users =userRepo.fidnUserById(id);
-            if(users !=null)
-            {
-                System.out.println(users.toString());
-                return users;
-            }
-            else return  null;
 
-
-        }
-        else
-        {
-            System.out.println("Cannot insert user in db");
-            return null;
-        }
-    }
     public Users getUserByUsername(String username){
         if(username!=null && !username.isEmpty())
         {
@@ -66,7 +48,7 @@ public class UserService {
             return null;
         }
     }
-    public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws  NoSuchFieldException {
         if(!vacationPackagesList.isEmpty()  )
         {
             return
@@ -107,7 +89,19 @@ public class UserService {
             return null;
         }
     }
-    public JTable insertVacationForUser(long idUser,long idVacation,DefaultTableModel defaultTableModel, JTable jTable) throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+    public List<VacationPackage> searchByEndDate(LocalDate date)  {
+        if(date!=null )
+        {
+            return userRepo.searchByEndDate(date);
+
+        }
+        else
+        {
+            System.out.println("The end date must be valid");
+            return null;
+        }
+    }
+    public JTable insertVacationForUser(long idUser,long idVacation,DefaultTableModel defaultTableModel, JTable jTable) throws  NoSuchFieldException {
        return userRepo.insertVacationForUser(idUser,idVacation,defaultTableModel,jTable);
     }
 

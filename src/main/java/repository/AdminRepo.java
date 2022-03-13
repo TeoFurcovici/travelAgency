@@ -4,14 +4,11 @@ import model.Admin;
 import model.Destination;
 import model.Users;
 import model.VacationPackage;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+
 
 import javax.persistence.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
@@ -141,19 +138,33 @@ public class AdminRepo {
         em.close();
         destination.printVacations();
     }
-    public void editVacationPackage(LocalDate endDate, int nrPeopleAllowed, String statusVacation,long idVacation)
+    public void editVacationPackage(LocalDate endDate, int nrPeopleAllowed, String statusVacation,long idVacation,long price)
     {
         EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
         VacationPackage selectedVacationPackage= findVacationById(idVacation);
-        selectedVacationPackage.setEndPeriod(endDate);
-        selectedVacationPackage.setNrPeopleAllowed(nrPeopleAllowed);
-        selectedVacationPackage.setStatusVacation(statusVacation);
+
+        if(endDate != null)
+        {
+            selectedVacationPackage.setEndPeriod(endDate);
+        }
+        if(!statusVacation.equals(""))
+        {
+            selectedVacationPackage.setStatusVacation(statusVacation);
+        }
+        if(nrPeopleAllowed != -1)
+        {
+            selectedVacationPackage.setNrPeopleAllowed(nrPeopleAllowed);
+        }
+        if(price != -1)
+        {
+            selectedVacationPackage.setPrice(price);
+        }
         em.merge(selectedVacationPackage);
         em.getTransaction().commit();
         em.close();
     }
-    public  <T> JTable create(List<T> genericList, DefaultTableModel defaultTableModel,JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    public  <T> JTable create(List<T> genericList, DefaultTableModel defaultTableModel,JTable jTable) throws  NoSuchFieldException {
         String[] columnsTable=new String[genericList.get(0).getClass().getDeclaredFields().length];
         int i=0;
         for(Field field:genericList.get(0).getClass().getDeclaredFields())
@@ -214,7 +225,7 @@ public class AdminRepo {
         jTable=new JTable(defaultTableModel);
         return  jTable;
     }
-    public JTable showTable(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel,JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    public JTable showTable(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel,JTable jTable) throws  NoSuchFieldException {
         JTable vacationPackagesTable;
         vacationPackagesTable=create(vacationPackagesList,defaultTableModel,jTable);
         return  vacationPackagesTable;

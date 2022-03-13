@@ -1,64 +1,61 @@
 package presentation;
 
 import controller.AdminController;
-import model.Destination;
-import model.StatusVacation;
 import service.RegisterLogInValidator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class AdminUI {
     AdminController adminController;
     DefaultTableModel defaultTableModel=new DefaultTableModel();
     JTable jTable;
     RegisterLogInValidator registerLogInValidator;
-    private JLabel destinationNameLabel=new JLabel("Destination Name:");
-    private JLabel startDateLabel=new JLabel("Start Date:");
-    private JLabel endDateLabel=new JLabel("End Date:");
-    private JLabel nrPeopleAllowedLabel=new JLabel("People Allowed:");
-    private JLabel idVacationLabel=new JLabel("Id Vacation:");
-    private JLabel statusVacationLabel=new JLabel("Status Vacation:");
-    private JLabel countryNameLabel=new JLabel("Country:");
-    private JLabel priceNameLabel=new JLabel("Price:");
-    private JTextField destinationNameText=new JTextField();
-    private JTextField startDateText=new JTextField();
-    private JTextField endDateText=new JTextField();
-    private JTextField statusVacationText=new JTextField();
-    private JTextField nrPeopleAllowedText=new JTextField();
-    private JTextField idVacationText=new JTextField();
-    private JTextField countryNameText=new JTextField();
-    private JTextField priceNameText=new JTextField();
-    private JButton createDestinationButtn=new JButton("Insert Destination");
-    private JButton deleteDestinationButton=new JButton("Delete Destination");
-    private JButton insertVacationPackage=new JButton("Insert Vacation");
-    private JButton deleteVacationPackage=new JButton("Delete Vacation");
-    private JButton editVacationPackage=new JButton("Edit Vacation");
-    private JButton viewVacationPackage=new JButton("View Vacations");
+    private final JTextField destinationNameText=new JTextField();
+    private final JTextField startDateText=new JTextField();
+    private final JTextField endDateText=new JTextField();
+    private final JTextField statusVacationText=new JTextField();
+    private final JTextField nrPeopleAllowedText=new JTextField();
+    private final JTextField idVacationText=new JTextField();
+    private final JTextField countryNameText=new JTextField();
+    private final JTextField priceNameText=new JTextField();
+    private final JButton createDestinationButtn=new JButton("Insert Destination");
+    private final JButton deleteDestinationButton=new JButton("Delete Destination");
+    private final JButton insertVacationPackage=new JButton("Insert Vacation");
+    private final JButton deleteVacationPackage=new JButton("Delete Vacation");
+    private final JButton editVacationPackage=new JButton("Edit Vacation");
+    private final JButton viewVacationPackage=new JButton("View Vacations");
 
     public AdminUI() {
         this.adminController=new AdminController();
         this.registerLogInValidator=new RegisterLogInValidator();
         JFrame frame = new JFrame();
 
-        frame.setSize(750,700);
+        frame.setSize(670,620);
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         JPanel panel=new JPanel();
         panel.setBackground(Color.decode("#ccd9ff"));
         panel.setLayout(null);
         frame.add(panel);
 
+        JLabel destinationNameLabel = new JLabel("Destination Name:");
         destinationNameLabel.setBounds(7,7,120,35);
+        JLabel startDateLabel = new JLabel("Start Date:");
         startDateLabel.setBounds(277,7,120,35);
+        JLabel endDateLabel = new JLabel("End Date:");
         endDateLabel.setBounds(277,47,120,35);
+        JLabel nrPeopleAllowedLabel = new JLabel("People Allowed:");
         nrPeopleAllowedLabel.setBounds(277,87,120,35);
+        JLabel idVacationLabel = new JLabel("Id Vacation:");
         idVacationLabel.setBounds(277,127,120,35);
+        JLabel statusVacationLabel = new JLabel("Status Vacation:");
         statusVacationLabel.setBounds(277,167,120,35);
+        JLabel priceNameLabel = new JLabel("Price:");
         priceNameLabel.setBounds(277,207,120,35);
         nrPeopleAllowedText.setBounds(370,87,120,25);
         statusVacationText.setBounds(370,167,120,25);
@@ -68,6 +65,7 @@ public class AdminUI {
         startDateText.setBounds(370,7,120,25);
         endDateText.setBounds(370,47,120,25);
 
+        JLabel countryNameLabel = new JLabel("Country:");
         countryNameLabel.setBounds(7,47,120,35);
         countryNameText.setBounds(70,47,120,25);
 
@@ -100,79 +98,73 @@ public class AdminUI {
         panel.add(deleteVacationPackage);
         panel.add(editVacationPackage);
         panel.add(viewVacationPackage);
-        insertDestinationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adminController.createDestination(destinationNameText.getText(),countryNameText.getText());
+        insertDestinationActionListener(e -> adminController.createDestination(destinationNameText.getText(),countryNameText.getText()));
+        deleteDestinationActionListener(e -> adminController.deleteDestination(destinationNameText.getText()));
+        insertVacationActionListener(e -> {
+            LocalDate startDate= LocalDate.parse(startDateText.getText());
+            LocalDate endDate= LocalDate.parse(endDateText.getText());
+            if(registerLogInValidator.isValidNr(priceNameText.getText()) && registerLogInValidator.isValidDate(startDateText.getText())
+            && registerLogInValidator.isValidDate(endDateText.getText()) && registerLogInValidator.endDateAfterStartDate(endDate,startDate)
+            && registerLogInValidator.isValidNr(nrPeopleAllowedText.getText())) {
+                adminController.insertVacationPackage(endDate, Integer.parseInt(nrPeopleAllowedText.getText()), startDate, destinationNameText.getText(), statusVacationText.getText(), Long.parseLong(priceNameText.getText()));
             }
-        });
-        deleteDestinationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adminController.deleteDestination(destinationNameText.getText());
+            else if(!registerLogInValidator.isValidNr(priceNameText.getText()))
+            {
+                JOptionPane.showMessageDialog(null,"Plese enter a valid number for price","Info Box",JOptionPane.INFORMATION_MESSAGE);
             }
-        });
-        insertVacationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalDate startDate= LocalDate.parse(startDateText.getText());
-                LocalDate endDate= LocalDate.parse(endDateText.getText());
-                if(registerLogInValidator.isValidNr(priceNameText.getText()) && registerLogInValidator.isValidDate(startDateText.getText())
-                && registerLogInValidator.isValidDate(endDateText.getText()) && registerLogInValidator.endDateAfterStartDate(endDate,startDate)
-                && registerLogInValidator.isValidNr(nrPeopleAllowedText.getText())) {
-                    adminController.insertVacationPackage(endDate, Integer.parseInt(nrPeopleAllowedText.getText()), startDate, destinationNameText.getText(), statusVacationText.getText(), Long.parseLong(priceNameText.getText()));
-                }
-                else if(!registerLogInValidator.isValidNr(priceNameText.getText()))
-                {
-                    JOptionPane.showMessageDialog(null,"Plese enter a valid number for price","Info Box",JOptionPane.INFORMATION_MESSAGE);
-                }
-                else if(!registerLogInValidator.endDateAfterStartDate(endDate,startDate) ||
-                !registerLogInValidator.isValidDate(endDateText.getText()) || !registerLogInValidator.isValidDate(startDateText.getText()))
-                {
-                    JOptionPane.showMessageDialog(null,"The date isn`t valid!","Info Box",JOptionPane.INFORMATION_MESSAGE);
-                }
-                else if(!registerLogInValidator.isValidNr(nrPeopleAllowedText.getText()))
-                {
-                    JOptionPane.showMessageDialog(null,"Plese enter a valid number for the number of people ","Info Box",JOptionPane.INFORMATION_MESSAGE);
+            else if(!registerLogInValidator.endDateAfterStartDate(endDate,startDate) ||
+            !registerLogInValidator.isValidDate(endDateText.getText()) || !registerLogInValidator.isValidDate(startDateText.getText()))
+            {
+                JOptionPane.showMessageDialog(null,"The date isn`t valid!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+            }
+            else if(!registerLogInValidator.isValidNr(nrPeopleAllowedText.getText()))
+            {
+                JOptionPane.showMessageDialog(null,"Plese enter a valid number for the number of people ","Info Box",JOptionPane.INFORMATION_MESSAGE);
 
-                }
             }
         });
-        deleteVacationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adminController.deleteVacationPackage(Long.parseLong(idVacationText.getText()));
+        deleteVacationActionListener(e -> adminController.deleteVacationPackage(Long.parseLong(idVacationText.getText())));
+        editVacationActionListener(e -> {
+            LocalDate endDate;
+            int peopleAllowed;
+            long price;
+            try {
+                endDate= LocalDate.parse(endDateText.getText());
+            } catch (DateTimeParseException ex) {
+                endDate = null;
             }
-        });
-        editVacationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalDate endDate= LocalDate.parse(endDateText.getText());
-                adminController.editVacationPackage(endDate,Integer.parseInt(nrPeopleAllowedText.getText()),statusVacationText.getText(),Long.parseLong(idVacationText.getText()));
+            try {
+                peopleAllowed = Integer.parseInt(nrPeopleAllowedText.getText());
+            } catch (NumberFormatException ex) {
+                peopleAllowed = -1;
             }
+            try {
+                price = Long.parseLong(priceNameText.getText());
+            } catch (NumberFormatException ex) {
+                price = -1;
+            }
+
+            adminController.editVacationPackage(endDate,peopleAllowed,statusVacationText.getText(),Long.parseLong(idVacationText.getText()),price);
         });
-        viewVacationActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    JScrollPane myScrollPane = new JScrollPane();
-                    myScrollPane.setBounds(7, 325, 600, 250);
-                    defaultTableModel= new DefaultTableModel(){
-                        @Override
-                        public boolean isCellEditable(int row, int column)
-                        {
-                            return  false;
-                        }
-                    };
-                    jTable= new JTable();
-                    JTable table=adminController.viewVacationPackage(adminController.getAll(),defaultTableModel,jTable);
-                    jTable.setVisible(true);
-                    jTable.setEnabled(true);
-                    myScrollPane.setViewportView(table);
-                    panel.add(myScrollPane);
-                } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException illegalAccessException) {
-                    illegalAccessException.printStackTrace();
-                }
+        viewVacationActionListener(e -> {
+            try {
+                JScrollPane myScrollPane = new JScrollPane();
+                myScrollPane.setBounds(7, 325, 600, 250);
+                defaultTableModel= new DefaultTableModel(){
+                    @Override
+                    public boolean isCellEditable(int row, int column)
+                    {
+                        return  false;
+                    }
+                };
+                jTable= new JTable();
+                JTable table=adminController.viewVacationPackage(adminController.getAll(),defaultTableModel,jTable);
+                jTable.setVisible(true);
+                jTable.setEnabled(true);
+                myScrollPane.setViewportView(table);
+                panel.add(myScrollPane);
+            } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException illegalAccessException) {
+                illegalAccessException.printStackTrace();
             }
         });
 

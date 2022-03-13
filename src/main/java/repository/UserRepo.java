@@ -9,6 +9,7 @@ import javax.persistence.Persistence;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,6 +218,29 @@ public class UserRepo {
         em.close();
         return null;
     }
+
+    public List<VacationPackage> searchByEndDate(LocalDate endPeriod)
+    {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
+        List <VacationPackage> vacationPackageList;
+        try {
+            vacationPackageList = em.createQuery("select v from VacationPackage v where v.endPeriod = : endPeriod", VacationPackage.class)
+                    .setParameter("endPeriod",endPeriod)
+                    .getResultList();
+            return  vacationPackageList;
+        }
+        catch (NoResultException e)
+        {
+            System.out.println("No vacation package was found by provided id.");
+        }
+
+        em.getTransaction().commit();
+        em.close();
+        return null;
+    }
+
+
 
 
 }

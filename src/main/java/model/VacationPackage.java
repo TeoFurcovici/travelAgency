@@ -29,7 +29,9 @@ public class VacationPackage {
     @JoinColumn(name="idVacation")
     private List<Users> users=new ArrayList<Users>();
 
-
+    public void setPrice(long price) {
+        this.price = price;
+    }
 
     public long getIdVacation() {
         return idVacation;

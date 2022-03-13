@@ -2,7 +2,6 @@ package controller;
 
 import model.Admin;
 import model.Destination;
-import model.StatusVacation;
 import model.VacationPackage;
 import service.AdminService;
 
@@ -43,9 +42,9 @@ public class AdminController {
     {
         adminService.deleteVacationPackage(idVacation);
     }
-    public void editVacationPackage(LocalDate endDate,int nrPeopleAllowed,String statusVacation,long idVacation)
+    public void editVacationPackage(LocalDate endDate,int nrPeopleAllowed,String statusVacation,long idVacation,long price)
     {
-        adminService.editVacationPackage(endDate,nrPeopleAllowed,statusVacation,idVacation);
+        adminService.editVacationPackage(endDate,nrPeopleAllowed,statusVacation,idVacation,price);
     }
     public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
         return adminService.viewVacationPackage(vacationPackagesList,defaultTableModel,jTable);

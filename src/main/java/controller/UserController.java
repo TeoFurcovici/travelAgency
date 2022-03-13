@@ -8,6 +8,7 @@ import service.UserService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -42,6 +43,9 @@ public class UserController {
     }
     public List<VacationPackage> searchByDestination(String name)  {
         return userService.searchByDestination(name);
+    }
+    public List<VacationPackage> searchByEndDate(LocalDate date)  {
+        return userService.searchByEndDate(date);
     }
 
 }

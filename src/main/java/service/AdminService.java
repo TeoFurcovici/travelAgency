@@ -2,13 +2,11 @@ package service;
 
 import model.Admin;
 import model.Destination;
-import model.StatusVacation;
 import model.VacationPackage;
 import repository.AdminRepo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -68,19 +66,19 @@ public class AdminService {
     public void deleteVacationPackage(long idVacation) {
         adminRepo.deleteVacationPackage(idVacation);
     }
-    public void editVacationPackage(LocalDate endDate, int nrPeopleAllowed, String statusVacation,long idVacation)
+    public void editVacationPackage(LocalDate endDate, int nrPeopleAllowed, String statusVacation,long idVacation,long price)
     {
-        if(endDate!=null &&  statusVacation!=null )
-        {
-            adminRepo.editVacationPackage(endDate,nrPeopleAllowed,statusVacation,idVacation);
+        //if(endDate!=null &&  statusVacation!=null )
+        //{
+            adminRepo.editVacationPackage(endDate,nrPeopleAllowed,statusVacation,idVacation,price);
 
-        }
-        else
-        {
-            System.out.println("Cannot be edited  destination in db");
-        }
+        //}
+        //else
+       // {
+         //   System.out.println("Cannot be edited  destination in db");
+        //}
     }
-    public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    public JTable viewVacationPackage(List<VacationPackage> vacationPackagesList, DefaultTableModel defaultTableModel, JTable jTable) throws  NoSuchFieldException {
         if(!vacationPackagesList.isEmpty()  )
         {
            return

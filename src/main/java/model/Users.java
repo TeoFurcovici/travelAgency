@@ -4,10 +4,8 @@ package model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-//@Table(name = "users")
 public class Users {
 
     @Id
@@ -25,7 +23,7 @@ public class Users {
     @Column(unique =true, nullable = false)
     private String password;
     @ManyToMany(mappedBy = "users",fetch = FetchType.LAZY)
-    private List<VacationPackage> vacations= new ArrayList<VacationPackage>();
+    private List<VacationPackage> vacations= new ArrayList<>();
 
     public List<VacationPackage> getVacations() {
         return vacations;
@@ -54,17 +52,11 @@ public class Users {
         vacations.remove(vacationPackage);
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
 
     public long getId() {
         return id;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
 
     public String getUsername() {
         return username;
