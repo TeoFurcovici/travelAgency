@@ -19,6 +19,7 @@ public class RegularUserUI {
     JLabel labelImage = new JLabel("Info?");
     private final JComboBox<String> jComboBox=new JComboBox<>(optionsSearch);
 
+
     private  final JTextField usernameText=new JTextField();
     private  final JButton viewAvailableVacation=new JButton("View Vacations");
     private  final JButton bookVacation=new JButton("Book Vacation");
@@ -28,7 +29,8 @@ public class RegularUserUI {
     DefaultTableModel defaultTableModel=new DefaultTableModel();
     JTable jTable;
 
-    public RegularUserUI() {
+    public RegularUserUI(Users user) {
+        this.usernameText.setText(user.getUsername());
         JFrame frame1 = new JFrame();
         userController= new UserController();
         frame1.setSize(750,700);
@@ -95,7 +97,8 @@ public class RegularUserUI {
         panel1.add(searchButton);
         panel1.add(viewMyBooking);
         bookVacationListener(e -> {
-            Users user= userController.getByUsername(usernameText.getText());
+            Users user1= userController.getByUsername(usernameText.getText());
+            usernameText.setText(usernameText.getText());
             JScrollPane myScrollPane = new JScrollPane();
             myScrollPane.setBounds(7, 325, 600, 250);
             defaultTableModel = new DefaultTableModel() {
@@ -107,7 +110,8 @@ public class RegularUserUI {
             jTable = new JTable();
             JTable table = null;
             try {
-                table = userController.insertVacationForUser(user.getId(),Long.parseLong(idVacationText.getText()),defaultTableModel,jTable);
+                table = userController.insertVacationForUser(user1.getId(),Long.parseLong(idVacationText.getText()),defaultTableModel,jTable);
+                JOptionPane.showMessageDialog(null,"Your vacation has been successfully booked!");
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | NoSuchFieldException invocationTargetException) {
                 invocationTargetException.printStackTrace();
             }

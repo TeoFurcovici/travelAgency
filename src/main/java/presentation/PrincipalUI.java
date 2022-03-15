@@ -7,7 +7,6 @@ import service.RegisterLogInValidator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,8 +40,14 @@ public class PrincipalUI {
     private final JTextField lastNametextAdmin=new JTextField();
 
 
+
+    public String getUsernameText() {
+        return usernameText.getText();
+    }
+
     public PrincipalUI() {
         this.userController= new UserController();
+
         this.registerLogInValidator= new RegisterLogInValidator();
         this.adminController= new AdminController();
         JFrame framePrincipal = new JFrame();
@@ -256,7 +261,7 @@ public class PrincipalUI {
 
             }
             else
-                regularUserUI= new RegularUserUI();
+                regularUserUI= new RegularUserUI(regUser);
 
         });
         logInButtonAdminActionListener(e -> {

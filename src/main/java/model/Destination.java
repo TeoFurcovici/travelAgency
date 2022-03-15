@@ -12,9 +12,9 @@ public class Destination {
     @GeneratedValue
     @Column(name = "idDestination", unique = true, nullable = false)
     private long idDestination;
-    @Column(name = "destinationName")
+    @Column(name = "destinationName",nullable = false,unique = true)
     private String destinationName;
-    @Column(name = "country")
+    @Column(name = "country",nullable = false,unique = true)
     private String country;
     @OneToMany(mappedBy = "destination",  cascade = CascadeType.ALL)
     private List<VacationPackage> vacationPackages=new ArrayList<>();

@@ -6,6 +6,7 @@ import service.RegisterLogInValidator;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class AdminUI {
     private final JButton viewVacationPackage=new JButton("View Vacations");
 
     public AdminUI() {
+        //this.principalUI= new PrincipalUI();
         this.adminController=new AdminController();
         this.registerLogInValidator=new RegisterLogInValidator();
         JFrame frame = new JFrame();
@@ -98,8 +100,23 @@ public class AdminUI {
         panel.add(deleteVacationPackage);
         panel.add(editVacationPackage);
         panel.add(viewVacationPackage);
-        insertDestinationActionListener(e -> adminController.createDestination(destinationNameText.getText(),countryNameText.getText()));
-        deleteDestinationActionListener(e -> adminController.deleteDestination(destinationNameText.getText()));
+
+        insertDestinationActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adminController.createDestination(destinationNameText.getText(),countryNameText.getText());
+                JOptionPane.showMessageDialog(null,"Your destination has been successfully added!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        deleteDestinationActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adminController.deleteDestination(destinationNameText.getText());
+                JOptionPane.showMessageDialog(null,"Your destination has been successfully deleted!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
         insertVacationActionListener(e -> {
             LocalDate startDate= LocalDate.parse(startDateText.getText());
             LocalDate endDate= LocalDate.parse(endDateText.getText());
@@ -107,10 +124,12 @@ public class AdminUI {
             && registerLogInValidator.isValidDate(endDateText.getText()) && registerLogInValidator.endDateAfterStartDate(endDate,startDate)
             && registerLogInValidator.isValidNr(nrPeopleAllowedText.getText())) {
                 adminController.insertVacationPackage(endDate, Integer.parseInt(nrPeopleAllowedText.getText()), startDate, destinationNameText.getText(), statusVacationText.getText(), Long.parseLong(priceNameText.getText()));
+                JOptionPane.showMessageDialog(null,"Your vacation has been successfully added!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
             }
             else if(!registerLogInValidator.isValidNr(priceNameText.getText()))
             {
-                JOptionPane.showMessageDialog(null,"Plese enter a valid number for price","Info Box",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,"Please enter a valid number for price","Info Box",JOptionPane.INFORMATION_MESSAGE);
             }
             else if(!registerLogInValidator.endDateAfterStartDate(endDate,startDate) ||
             !registerLogInValidator.isValidDate(endDateText.getText()) || !registerLogInValidator.isValidDate(startDateText.getText()))
@@ -145,6 +164,8 @@ public class AdminUI {
             }
 
             adminController.editVacationPackage(endDate,peopleAllowed,statusVacationText.getText(),Long.parseLong(idVacationText.getText()),price);
+            JOptionPane.showMessageDialog(null,"Your vacation has been successfully deleted!","Info Box",JOptionPane.INFORMATION_MESSAGE);
+
         });
         viewVacationActionListener(e -> {
             try {
